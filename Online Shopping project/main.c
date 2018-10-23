@@ -10,31 +10,38 @@ typedef struct {
     char fname[30];
     char lname[30];
 }name;
+
 typedef struct {
     int day,month,year;
 }date;
+
 typedef struct {
     char door_no[10];
     char address_line1[100];
     char city[20];
     char state[20];
 }address;
+
 typedef struct {
     char login_name[100];
     char password[100];
 }credentials;
+
 typedef struct {
     name s_name;
     address s_address;
     char phone_no[11];
 
 }seller;
+
 typedef struct {
     int u_ID;
     int p_ID;
     int o_ID;
 }counters;
+
 counters main_counter={0,0,0};
+
 typedef struct {
     int u_ID;
     name u_name;
@@ -46,6 +53,7 @@ typedef struct {
     int i;
     int o_ID[100];
 }user;
+
 typedef struct{
     int p_ID;
     char p_name[30];
@@ -56,6 +64,7 @@ typedef struct{
    // int discount;
     seller p_seller;
 }product;
+
 typedef struct{
     int o_ID;
     int u_ID;
@@ -64,6 +73,7 @@ typedef struct{
     product o_product;
     address shipping_address;
 }order;
+
 struct product_list{
     product data;
     struct product_list *next;
@@ -75,11 +85,15 @@ struct order_list{
     struct order_list *next;
     struct order_list *prev;
 };
+
 user currentusr;
+
 typedef struct order_list ORDER;
 ORDER *order_front =NULL, *order_end = NULL, *order_temp = NULL;
+
 typedef struct product_list PRODUCT;
 PRODUCT *product_front =NULL, *product_end=NULL, *product_temp=NULL;
+
 void insert_product_tolist()
 {
     if(product_front == NULL)
@@ -100,7 +114,9 @@ struct user_list{
     struct user_list *next;
     struct user_list *prev;
 };
+
 typedef struct user_list USER;
+
 USER* get_user()
 {
     USER *temp;
@@ -112,6 +128,7 @@ USER* get_user()
     }
     return temp;
 };
+
 void write_counters(counters c)
 {
     FILE *write = fopen("data/counters.dat","w");
@@ -123,6 +140,7 @@ void write_counters(counters c)
     fwrite(&c,sizeof(counters),1,write);
     fclose(write);
 }
+
 void read_counters()
 {
     FILE *read = fopen("data/counters.dat","r");
@@ -134,7 +152,9 @@ void read_counters()
     fread(&main_counter,sizeof(counters),1,read);
     fclose(read);
 }
+
 USER *user_front =NULL, *user_end=NULL, *user_temp=NULL;
+
 void insert_user_tolist()
 {
     if(user_front == NULL)
@@ -149,6 +169,7 @@ void insert_user_tolist()
         user_end = user_temp;
     }
 }
+
 void load_users()
 {
     FILE *load_user=fopen("data/user_details.dat","r");
@@ -166,6 +187,7 @@ void load_users()
     }
     fclose(load_user);
 }
+
 int login_admin()
 {
     char login_name[100],password[100];
@@ -177,6 +199,7 @@ int login_admin()
     printf("Enter Password: ");
     fflush(stdin);
     gets(password);
+
     if((read_login = fopen("data/admin_login.txt","r")) == NULL)
     {
         printf("Couldn't find Admin details\n");
@@ -184,9 +207,11 @@ int login_admin()
     }
     fscanf(read_login,"%s %s",check_login,check_password);
     fclose(read_login);
+
     if(!strcmp(check_login,login_name) && !strcmp(check_password,password))
         return TRUE;
-return FALSE;
+
+    return FALSE;
 }
 
 int login_user()
@@ -199,6 +224,7 @@ int login_user()
     fflush(stdin);
     gets(password);
     user_temp = user_front;
+
     while(user_temp != NULL)
     {
         if(strcmp(user_temp->data.email_id,login_name) == 0 && strcmp(user_temp->data.password,password) == 0)
@@ -209,13 +235,17 @@ int login_user()
         }
         user_temp = user_temp->next;
     }
+
     if(match == 1)
         return TRUE;
-return FALSE;
+
+    return FALSE;
 }
+
 void write_user(user u)
 {
     FILE *register_user = fopen("data/user_details.dat","a");
+
     if(register_user == NULL)
     {
         printf("cannot created a file\n");
@@ -224,6 +254,7 @@ void write_user(user u)
     fwrite(&u, sizeof(user),1,register_user);
     fclose(register_user);
 }
+
 void user_register()
 {
     user usr;
@@ -265,6 +296,7 @@ void user_register()
     printf("Reenter Password: ");
     gets(password2);
     fflush(stdin);
+
     if(strcmp(password1,password2) != 0)
     {
         printf("Passwords dont match Enter again\n");
@@ -285,6 +317,7 @@ void view_users()
 {
     user_temp = user_front;
     printf("USER ID \tUSER NAME \tEMAIL ID\n");
+
     while(user_temp != NULL)
     {
         printf("%7d\t",user_temp->data.u_ID);
@@ -294,6 +327,7 @@ void view_users()
     }
     system("pause");
 }
+
 void displayele(USER *ptr)
 {
     printf("DETAILS\n");
@@ -305,10 +339,12 @@ void displayele(USER *ptr)
     printf("Phone Number: %s\n",ptr->data.phone_no);
     printf("\n");
 }
+
 int deleteinlist(int uid)
 {
     char ch;
     user_temp = user_front;
+
     if(user_front == NULL)
         return FALSE;
     else if(user_front->next == NULL)
@@ -327,7 +363,6 @@ int deleteinlist(int uid)
                 return TRUE;
             }
         }
-
     }
     else
     {
@@ -337,6 +372,7 @@ int deleteinlist(int uid)
             printf("Do you wanna delete the above user(Y/N)");
             fflush(stdin);
             scanf("%c",&ch);
+
             if(ch=='Y' || ch=='y')
             {
                 user_temp = user_front;
@@ -383,14 +419,17 @@ int deleteinlist(int uid)
             }
         }
     }
+
     return FALSE;
 }
+
 void deleteinfile(int uid)
 {
     FILE *user_data = fopen("data/user_details.dat","w");
     USER *temporary;
     user t2;
     temporary = user_front;
+
     while(temporary!= NULL)
     {
         t2 = temporary->data;
@@ -403,6 +442,7 @@ void deleteinfile(int uid)
 void write_product(product p)
 {
     FILE *register_product = fopen("data/product_details.dat","a");
+
     if(register_product == NULL)
     {
         printf("cannot created a file\n");
@@ -471,6 +511,7 @@ void view_product()
 {
     product_temp = product_front;
     printf("Product ID \tProduct NAME \tRemaining Product \tPrice \tRating \n");
+
     while(product_temp != NULL)
     {
         printf("%7d\t",product_temp->data.p_ID);
@@ -495,10 +536,12 @@ void displayele(PRODUCT *ptr)
     //seller details?
     printf("\n");
 }
+
 int deleteinlist(int pid)
 {
     char ch;
     product_temp = product_front;
+
     if(product_front == NULL)
         return FALSE;
     else if(product_front->next == NULL)
@@ -573,6 +616,7 @@ int deleteinlist(int pid)
             }
         }
     }
+
     return FALSE;
 }
 
@@ -582,6 +626,7 @@ void deleteinfile(int pid)
     USER *temporary;
     user t2;
     temporary = product_front;
+
     while(temporary!= NULL)
     {
         t2 = temporary->data;
@@ -590,6 +635,7 @@ void deleteinfile(int pid)
     }
     fclose(product_data);
 }
+
 void manage_users()
 {
     while(1)
@@ -597,44 +643,47 @@ void manage_users()
         int ch,uid,res;
         system("cls");
         printf("ONLINE SHOPPING APPLICATION\n\n");
-        printf("1.Add User\n2.View Users\n3.Delete User by ID\n4.View User detail by ID\n5.Set User Priority\n6.Exit\n\n");
+        printf("1. Add User\n2. View Users\n3. Delete User by ID\n4. View User detail by ID\n5. Set User Priority\n6. Exit\n\n");
         printf("Enter your choice: ");
         scanf("%d",&ch);
+
         switch(ch)
         {
-        case 1:
-            user_register();
-            break;
-        case 2:
-            view_users();
-            break;
-        case 3:
-            printf("Enter your ID to Delete: ");
-            scanf("%d",&uid);
-            res = deleteinlist(uid);
-            if(res)
-            {
-                printf("Deleted User\n");
-                deleteinfile(uid);
-                main_counter.u_ID--;
-                write_counters(main_counter);
-            }
-            else
-            {
-                printf("Couldn't delete the above user\n");
-            }
-            break;
-        case 4:
-            break;
-        case 5:
-            break;
-        case 6:
-            return;
-        default:
-            printf("Wrong Choice entered\n");
+            case 1:
+                user_register();
+                break;
+            case 2:
+                view_users();
+                break;
+            case 3:
+                printf("Enter your ID to Delete: ");
+                scanf("%d",&uid);
+                res = deleteinlist(uid);
+
+                if(res)
+                {
+                    printf("Deleted User\n");
+                    deleteinfile(uid);
+                    main_counter.u_ID--;
+                    write_counters(main_counter);
+                }
+                else
+                {
+                    printf("Couldn't delete the above user\n");
+                }
+                break;
+            case 4:
+                break;
+            case 5:
+                break;
+            case 6:
+                return;
+            default:
+                printf("Wrong Choice entered\n");
         }
     }
 }
+
 void manage_products()
 {
     while(1)
@@ -642,42 +691,44 @@ void manage_products()
         int ch,uid,res;
         system("cls");
         printf("ONLINE SHOPPING APPLICATION\n\n");
-        printf("1.Add Products\n2.View Products\n3.Delete Products by Name\n4.View Products detail by Name\n6.Exit\n");
+        printf("1. Add Products\n2. View Products\n3. Delete Products by Name\n4. View Products detail by Name\n5. Exit\n");
         printf("Enter your choice: ");
         fflush(stdin);
         scanf("%d",&ch);
+
         switch(ch)
         {
-        case 1:
-            product_register();
-            break;
-        case 2:
-            view_product();
-            break;
-        case 3:
-            printf("Enter your ID to Delete: ");
-            scanf("%d",&uid);
-            res = deleteinlist(uid);
-            if(res)
-            {
-                printf("Deleted User\n");
-                deleteinfile(uid);
-                main_counter.u_ID--;
-                write_counters(main_counter);
-            }
-            else
-            {
-                printf("Couldn't delete the above user\n");
-            }
-            break;
-        case 4:
-            break;
-        case 5:
-            break;
-        case 6:
-            return;
-        default:
-            printf("Wrong Choice entered\n");
+            case 1:
+                product_register();
+                break;
+            case 2:
+                view_product();
+                break;
+            case 3:
+                printf("Enter your ID to Delete: ");
+                scanf("%d",&uid);
+                res = deleteinlist(uid);
+
+                if(res)
+                {
+                    printf("Deleted User\n");
+                    deleteinfile(uid);
+                    main_counter.u_ID--;
+                    write_counters(main_counter);
+                }
+                else
+                {
+                    printf("Couldn't delete the above user\n");
+                }
+                break;
+            case 4:
+                break;
+            case 5:
+                break;
+            case 6:
+                return;
+            default:
+                printf("Wrong Choice entered\n");
         }
     }
 }
@@ -685,32 +736,33 @@ void manage_products()
 void admin_home()
 {
     int ch;
+
     while(1)
     {
         system("cls");
         printf("ONLINE SHOPPING APPLICATION\n\n");
-        printf("1. Manage Users\n2.Manage Products\nManage Orders\n4.Logout\n\n");
+        printf("1. Manage Users\n2. Manage Products\n3. Manage Orders\n4. Logout\n\n");
         printf("Enter your choice: ");
         scanf("%d",&ch);
         switch(ch)
         {
-        case 1:
-            manage_users();
-            break;
-        case 2:
-            manage_products();
-            break;
-        case 3:
-            //manage_orders();
-            break;
-        case 4:
-            return;
-        default:
-            printf("Wrong option Entered, Try again.\n");
-
+            case 1:
+                manage_users();
+                break;
+            case 2:
+                manage_products();
+                break;
+            case 3:
+                //manage_orders();
+                break;
+            case 4:
+                return;
+            default:
+                printf("Wrong option Entered, Try again.\n");
         }
     }
 }
+
 void register_order(int p_id, int u_id)
 {
     order od;
@@ -726,6 +778,7 @@ product return_product(int p_id)
     product_temp = product_front;
 
 }
+
 void place_order()
 {
     int p_id;
@@ -738,37 +791,35 @@ void place_order()
     od.o_ID = main_counter.o_ID;
     od.p_ID = p_id;
     od.u_ID = currentusr.u_ID;
-
-
-
 }
+
 void user_home()
 {
    int ch;
+
     while(1)
     {
         system("cls");
         printf("ONLINE SHOPPING APPLICATION\n\n");
-        printf("1. View Product\n2.PLace Order by Product ID\n3.View Orders\n4.Edit Details\n5.Delete Account\n6.Logout\n\n");
+        printf("1. View Product\n2. Place Order by Product ID\n3. View Orders\n4. Edit Details\n5. Delete Account\n6. Logout\n\n");
         printf("Enter your choice: ");
         scanf("%d",&ch);
         switch(ch)
         {
-        case 1:
-            view_product();
-            break;
-        case 2:
-            //manage_products();
-            place_order();
-            break;
-        case 3:
-            //manage_orders();
-            break;
-        case 4:
-            return;
-        default:
-            printf("Wrong option Entered, Try again.\n");
-
+            case 1:
+                view_product();
+                break;
+            case 2:
+                //manage_products();
+                place_order();
+                break;
+            case 3:
+                //manage_orders();
+                break;
+            case 4:
+                return;
+            default:
+                printf("Wrong option Entered, Try again.\n");
         }
     }
 }
@@ -777,80 +828,86 @@ int main()
 {
     int ch1,ch2,user_wrong_login=0,admin_wrong_login=0;
     FILE *load_impt = fopen("data/counters.dat","r");
+
     if(load_impt == NULL)
     {
         write_counters(main_counter);
     }
-        fclose(load_impt);
+    fclose(load_impt);
     read_counters();
     load_users();
+
     while(1)
     {
         system("cls");
         printf("ONLINE SHOPPING APPLICATION\n\n");
-        printf("1.Admin Login\n2.User Login/Register\n3.Exit\n");
+        printf("1. Admin Login\n2. User Login/Register\n3. Exit\n");
         printf("Enter your choice: ");
         scanf("%d",&ch1);
         switch(ch1)
         {
-        case 1:
-            admin_login_again:
-            if(login_admin())
-            {
-                admin_wrong_login = 0;
-                admin_home();
-            }
-            else
-            {
-                printf("Login Credentials are wrong. Enter again\n");
-                admin_wrong_login++;
-                if(admin_wrong_login <= 3)
-                    goto admin_login_again;
-            }
-            break;
-        case 2:
-            while(1)
-            {
-                system("cls");
-                printf("1.Login\n2.Sign up\n3.Exit\n\n");
-                printf("Enter your choice: ");
-                scanf("%d",&ch2);
-                switch(ch2)
-                {
-                case 1:
-                    user_login_again:
-                    if(login_user())
-                    {
-                        user_wrong_login = 0;
-                        //user_home();
-                    }
-                    else
-                    {
-                        printf("Login credentials are wrong. Enter again\n");
-                        user_wrong_login++;
-                        if(user_wrong_login <= 3)
-                            goto user_login_again;
-                    }
-                    break;
-                case 2:
-                    user_register();
-                    break;
-                case 3:
-                    goto exit_loop;
-                    break;
-                default:
-                    printf("Wrong Option entered. Try again\n");
-                }
-            }
-            exit_loop:
-            break;
-        case 3:
-            exit(0);
-            break;
-        default:
-            printf("Wrong option Entered\n");
-        }
+            case 1:
+                admin_login_again:
 
+                if(login_admin())
+                {
+                    admin_wrong_login = 0;
+                    admin_home();
+                }
+                else
+                {
+                    printf("Login Credentials are wrong. Enter again\n");
+                    admin_wrong_login++;
+
+                    if(admin_wrong_login <= 3)
+                        goto admin_login_again;
+                }
+                break;
+            case 2:
+                while(1)
+                {
+                    system("cls");
+                    printf("1. Login\n2. Sign up\n3. Exit\n\n");
+                    printf("Enter your choice: ");
+                    scanf("%d",&ch2);
+
+                    switch(ch2)
+                    {
+                    case 1:
+                        user_login_again:
+
+                        if(login_user())
+                        {
+                            user_wrong_login = 0;
+                            //user_home();
+                        }
+                        else
+                        {
+                            printf("Login credentials are wrong. Enter again\n");
+                            user_wrong_login++;
+
+                            if(user_wrong_login <= 3)
+                                goto user_login_again;
+                        }
+                        break;
+                    case 2:
+                        user_register();
+                        break;
+                    case 3:
+                        goto exit_loop;
+                        //break;
+                    default:
+                        printf("Wrong Option entered. Try again\n");
+                    }
+                }
+                exit_loop:
+                break;
+            case 3:
+                exit(0);
+                //break;
+            default:
+                printf("Wrong option Entered\n");
+        }
     }
     free(user_front);
     free(user_temp);
