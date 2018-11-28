@@ -343,8 +343,7 @@ int login_admin()
             if(cnt > 0)
             {
                 printf("\b");
-                printf(" ");
-                printf("\b");
+                printf(" \b");
                 i--;
                 cnt--;
             }
@@ -410,12 +409,12 @@ int login_user()
 
     while(user_temp != NULL)
     {
-        printf("%s - %s\n",user_temp->data.email_id,login_name);
-        printf("%s - %s\n",user_temp->data.password,password);
+        //printf("%s - %s\n",user_temp->data.email_id,login_name);
+        //printf("%s - %s\n",user_temp->data.password,password);
         if(strcmp(user_temp->data.email_id,login_name) == 0 && strcmp(user_temp->data.password,password) == 0)
         {
             match = 1;
-            printf("%s\n",user_temp->data.email_id);
+            //printf("%s\n",user_temp->data.email_id);
             currentusr = user_temp->data;
             break;
         }
@@ -445,8 +444,7 @@ void user_register()
 {
     user usr;
     user_temp = (USER *)malloc(sizeof(USER));
-    char password1[20],password2[20],pass;
-    int cnt=0,i=0;
+    char password1[20],password2[20];
     //read_counters();
     main_counter.u_ID++;
     id_counter.u_ID++;
@@ -479,33 +477,7 @@ void user_register()
     fflush(stdin);
     reenter_password:
     printf("Password: ");
-    while(1)
-    {
-        if(i < 0)
-            i = 0;
-        pass = getch();
-        if(pass == 13)
-            break;
-        else if(pass == 8)
-        {
-            if(cnt > 0)
-            {
-                printf("\b");
-                printf(" ");
-                printf("\b");
-                i--;
-                cnt--;
-            }
-        }
-        else
-        {
-            password1[i++] = pass;
-            printf("*");
-            cnt++;
-        }
-    }
-    password1[i] = '\0';
-    //gets(password1);
+    gets(password1);
     fflush(stdin);
     printf("Reenter Password: ");
     gets(password2);
@@ -537,8 +509,8 @@ void view_users()
     while(user_temp != NULL)
     {
         printf("%4d\t\t",user_temp->data.u_ID);
-        printf("%7s\t\t",user_temp->data.u_name.fname);
-        printf("%8s\n",user_temp->data.email_id);
+        printf("%7s\t",user_temp->data.u_name.fname);
+        printf("%s\n",user_temp->data.email_id);
         user_temp = user_temp->next;
     }
     system("pause");
@@ -914,8 +886,8 @@ void manage_users()
         printf("ONLINE SHOPPING APPLICATION\n\n");
         printf("1. Add User\n2. View Users\n3. Delete User by ID\n4. View User detail by ID\n5. Exit\n\n");
         printf("Enter your choice: ");
+        fflush(stdin);
         scanf("%d",&ch);
-
         switch(ch)
         {
             case 1:
@@ -943,7 +915,6 @@ void manage_users()
                 break;
             case 4:
                 printf("Enter user ID: ");
-                fflush(stdin);
                 scanf("%d",&uid);
                 if(!view_user_details_by_ID(uid))
                     printf("User Details not found.\n");
@@ -953,6 +924,7 @@ void manage_users()
                 return;
             default:
                 printf("Wrong Choice entered\n");
+                system("pause");
         }
     }
 }
@@ -1017,11 +989,15 @@ int display_product_by_name(char name[])
 void view_order(ORDER *ptr)
 {
     //order_temp = order_front;
-    printf("ORDER ID \tPRODUCT ID  \tUSER ID \tORDER DATE\n");
+    printf("ORDER ID \tPRODUCT ID  \tUSER ID \tORDER DATE \tDAYS LEFT TO DELIVER\n");
     while(ptr != NULL)
     {
         printf("%5d\t\t%6d\t%12d\t\t",ptr->data.o_ID,ptr->data.p_ID,ptr->data.u_ID);
-        printf("%d/%d/%d\n",ptr->data.o_date.day,ptr->data.o_date.month, ptr->data.o_date.year);
+        printf("%d/%d/%d",ptr->data.o_date.day,ptr->data.o_date.month, ptr->data.o_date.year);
+        if(ptr->data.o_product.daysleft > 0)
+            printf("\t\t%4d\n",ptr->data.o_product.daysleft);
+        else
+            printf("\t     DELIVERED\n");
         ptr = ptr->next;
     }
     system("pause");
@@ -1096,7 +1072,7 @@ void manage_products()
     {
         system("cls");
         printf("ONLINE SHOPPING APPLICATION\n\n");
-        printf("1. Add Products\n2. View Products\n3. Delete Products by Name\n4. View Products detail by Name\n5. Edit product details by ID\n6. Exit\n");
+        printf("1. Add Products\n2. View Products\n3. Delete Products by ID\n4. View Products detail by Name\n5. Edit product details by ID\n6. Exit\n");
         printf("Enter your choice: ");
         fflush(stdin);
         scanf("%d",&ch);
@@ -1110,7 +1086,7 @@ void manage_products()
                 view_product();
                 break;
             case 3:
-                printf("Enter your ID to Delete: ");
+                printf("Enter Product ID to Delete: ");
                 scanf("%d",&pid);
                 res = deleteproductinlist(pid);
 
@@ -1135,14 +1111,14 @@ void manage_products()
                 system("pause");
                 break;
             case 5:
-                enteragain:
+                //enteragain:
                 printf("Enter product ID to edit: ");
                 fflush(stdin);
                 scanf("%d",&pid);
                 if(!check_productp(pid))
                 {
-                    printf("Wrong product ID entered. Enter again.\n");
-                    goto enteragain;
+                    printf("Wrong product ID entered.\n");
+                    //goto enteragain;
                 }
                 edit_product(pid);
                 break;
@@ -1150,6 +1126,7 @@ void manage_products()
                 return;
             default:
                 printf("Wrong Choice entered\n");
+                system("pause");
         }
     }
 }
@@ -1327,16 +1304,30 @@ void delete_in_user(int uid, int oid)
         user_temp = user_temp->next;
     }
 }
+void update_noofproducts(int pid)
+{
+    product_temp = product_front;
+    while(product_temp != NULL)
+    {
+        if(product_temp->data.p_ID == pid)
+        {
+            product_temp->data.no_of_products++;
+            break;
+        }
+        product_temp = product_temp->next;
+    }
+}
 void delete_order(int oid)
 {
     char choice;
-    int found_in_priority = 0, found_in_order = 0, res1, res2, uid;
+    int found_in_priority = 0, found_in_order = 0, res1, res2, uid,pid;
     order_p_temp = order_p_front;
     while(order_p_temp != NULL)
     {
         if(order_p_temp->data.o_ID == oid)
         {
             found_in_priority = 1;
+            pid = order_p_temp->data.p_ID;
             uid = order_p_temp->data.u_ID;
         }
         order_p_temp = order_p_temp->next;
@@ -1374,6 +1365,8 @@ void delete_order(int oid)
             rewriteorders();
             main_counter.o_ID--;
             main_counter.o_p_ID--;
+            update_noofproducts(pid);
+            deleteproductinfile(pid);
             write_counters(main_counter);
             delete_in_user(uid, oid);
             deleteinfile(uid);
@@ -1422,6 +1415,7 @@ void manage_orders()
                 return;
             default:
                 printf("Wrong Choice entered\n");
+                system("pause");
         }
     }
 }
@@ -1436,6 +1430,7 @@ void admin_home()
         printf("ONLINE SHOPPING APPLICATION\n\n");
         printf("1. Manage Users\n2. Manage Products\n3. Manage Orders\n4. Logout\n\n");
         printf("Enter your choice: ");
+        fflush(stdin);
         scanf("%d",&ch);
         switch(ch)
         {
@@ -1452,6 +1447,7 @@ void admin_home()
                 return;
             default:
                 printf("Wrong option Entered, Try again.\n");
+                system("pause");
         }
     }
 }
@@ -1508,7 +1504,7 @@ void write_order(order o)
     }
     fwrite(&o, sizeof(order), 1, register_orders);
     fclose(register_orders);
-    printf("Wrote Order to Order_details.dat\n");
+    //printf("Wrote Order to Order_details.dat\n");
 }
 int check_productp(int p_id)
 {
@@ -1700,6 +1696,7 @@ void place_order()
     od.o_user = currentusr;
     od.o_product = return_product(p_id);
     od.o_product.daystodeliver = ceil(od.o_product.daystodeliver - (0.5 * od.o_user.prime));
+    od.o_product.daysleft = od.o_product.daystodeliver;
     od.o_date = curdate;
     order_temp->data = od;
     order_temp->next = NULL;
@@ -1710,19 +1707,24 @@ void place_order()
     write_p_q();
     insert_order_tolist();
     write_order(od);
+    printf("Order placed successfully\n");
     system("pause");
 }
 
 void display_order(order data)
 {
     //fill the printf statements here
-    printf("%d \t%s \t%d/%d/%d\n",data.o_ID,data.o_product.p_name,data.o_date.day,data.o_date.month,data.o_date.year);
+    printf("%5d\t\t%9s\t%d/%d/%d",data.o_ID,data.o_product.p_name,data.o_date.day,data.o_date.month,data.o_date.year);
+    if(data.o_product.daysleft > 0)
+        printf("\t\t%4d\n",data.o_product.daysleft);
+    else
+        printf("\t     DELIVERED\n");
 }
 
 void view_user_orders()
 {
     int i = currentusr.nooforders,j=0;
-    printf("ORDER ID \tPRODUCT NAME \tORDER DATE \n");
+    printf("ORDER ID \tPRODUCT NAME \tORDER DATE \tDAYS LEFT TO DELIVER \n");
     while(i>0)
     {
         order_temp = order_front;
@@ -1829,6 +1831,7 @@ void user_home()
         printf("ONLINE SHOPPING APPLICATION\n\n");
         printf("1. View Product\n2. Place Order by Product ID\n3. View Orders\n4. Delete Order by ID\n5. Edit Details\n6. Delete Account\n7. Logout\n\n");
         printf("Enter your choice: ");
+        fflush(stdin);
         scanf("%d",&ch);
         switch(ch)
         {
@@ -1873,6 +1876,7 @@ void user_home()
                 return ;
             default:
                 printf("Wrong option Entered, Try again.\n");
+                system("pause");
         }
     }
 }
@@ -1912,6 +1916,7 @@ int main()
         printf("ONLINE SHOPPING APPLICATION\n\n");
         printf("1. Admin Login\n2. User Login/Register\n3. Exit\n");
         printf("Enter your choice: ");
+        fflush(stdin);
         scanf("%d",&ch1);
         switch(ch1)
         {
@@ -1939,6 +1944,7 @@ int main()
                     printf("ONLINE SHOPPING APPLICATION\n\n");
                     printf("1. Login\n2. Sign up\n3. Exit\n\n");
                     printf("Enter your choice: ");
+                    fflush(stdin);
                     scanf("%d",&ch2);
 
                     switch(ch2)
@@ -1968,6 +1974,7 @@ int main()
                         //break;
                     default:
                         printf("Wrong Option entered. Try again\n");
+                        system("pause");
                     }
                 }
                 exit_loop:
@@ -1977,6 +1984,7 @@ int main()
                 //break;
             default:
                 printf("Wrong option Entered\n");
+                system("pause");
         }
     }
     free(user_front);
